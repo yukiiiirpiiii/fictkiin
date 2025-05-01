@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardcaptor Chat</title>
+    <style>
+        :root {
+            --pink: #ff9cd9;
+            --purple: #c17bff;
+            --blue: #7bd3ff;
+            --dark: #2a1a3a;
+            --light: #fff6fc;
+        }
+        
+        body {
+            background: 
+                url('sakura.png') center/cover no-repeat fixed,
+                linear-gradient(135deg, var(--pink), var(--blue));
+            color: #3a1a4a;
+            font-family: 'Comic Sans MS', 'Marker Felt', 'Arial Rounded MT', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Sakura petals animation */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('sakura.png');
+            pointer-events: none;
+            animation: sakuraFall 20s linear infinite;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        @keyframes sakuraFall {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
+        }
+
+        .profile-form {
+            background: rgba(255, 246, 252, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 
+                0 0 20px rgba(255, 156, 217, 0.6),
+                0 5px 30px rgba(193, 123, 255, 0.4);
+            width: 400px;
+            text-align: center;
+            border: 2px solid var(--pink);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-form::after {
+            content: "";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 50px;
+            height: 50px;
+            background: url('sakura.png') center/contain no-repeat;
+            transform: rotate(15deg);
+            opacity: 0.8;
+        }
+
+        .profile-form h2 {
+            color: #8a2be2;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(255, 156, 217, 0.5);
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-form h2::before {
+            content: "✧";
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .profile-form h2::after {
+            content: "✧";
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .profile-form input, 
+        .profile-form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 2px solid var(--pink);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #3a1a4a;
+            font-size: 16px;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .profile-form input:focus, 
+        .profile-form textarea:focus {
+            outline: none;
+            border-color: var(--purple);
+            box-shadow: 0 0 10px rgba(193, 123, 255, 0.5);
+        }
+
+        .profile-form textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .profile-form button {
+            background: linear-gradient(45deg, var(--pink), var(--purple));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .profile-form button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--purple), var(--blue));
+            transition: all 0.4s;
+            z-index: -1;
+        }
+
+        .profile-form button:hover::before {
+            left: 0;
+        }
+
+        .profile-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(193, 123, 255, 0.6);
+        }
+
+        .profile-form button:active {
+            transform: translateY(0);
+        }
+
+        .chat-container {
+            display: none;
+            max-width: 600px;
+            width: 100%;
+            border: 3px solid var(--pink);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 
+                0 0 30px rgba(255, 156, 217, 0.7),
+                0 10px 40px rgba(193, 123, 255, 0.5);
+            background: rgba(255, 246, 252, 0.95);
+            position: relative;
+        }
+
+        .chat-container::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: url('https://i.imgur.com/4QkYV0p.png') center/contain no-repeat;
+            z-index: 1;
+        }
+
+        .chat-header {
+            background: linear-gradient(90deg, var(--pink), var(--purple));
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.4em;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            position: relative;
+            letter-spacing: 1px;
+        }
+
+        .chat-header::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 15px solid var(--purple);
+        }
+
+        .partner-info {
+            padding: 15px;
+            text-align: center;
+            background: linear-gradient(90deg, rgba(255, 156, 217, 0.2), rgba(123, 200, 255, 0.2));
+            border-bottom: 2px dashed var(--pink);
+            position: relative;
+        }
+
+        .partner-info::before,
+        .partner-info::after {
+            content: "✦";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--pink);
+            font-size: 1.2em;
+        }
+
+        .partner-info::before {
+            left: 20px;
+        }
+
+        .partner-info::after {
+            right: 20px;
+        }
+
+        #partner-name {
+            font-size: 1.2em;
+            color: #6a3093;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .partner-bio {
+            color: #8a6d9e;
+            font-style: italic;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background: 
+                url('https://i.imgur.com/9QVYV0p.png') center/contain no-repeat,
+                rgba(255, 246, 252, 0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pink) transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: var(--pink);
+            border-radius: 10px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 20px;
+            max-width: 80%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message div:first-child {
+            margin-bottom: 4px;
+        }
+
+        .message small {
+            align-self: flex-end;
+            font-size: 0.75em;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .received {
+            background: rgba(123, 200, 255, 0.3);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            border: 1px solid rgba(123, 200, 255, 0.5);
+        }
+
+        .received::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 10px solid rgba(123, 200, 255, 0.3);
+        }
+
+        .sent {
+            background: rgba(255, 156, 217, 0.3);
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+            border: 1px solid rgba(255, 156, 217, 0.5);
+        }
+
+        .sent::after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            top: 10px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 10px solid rgba(255, 156, 217, 0.3);
+        }
+
+        .system-message {
+            text-align: center;
+            color: #8a6d9e;
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 0.9em;
+            position: relative;
+        }
+
+        .system-message::before,
+        .system-message::after {
+            content: "~";
+            margin: 0 5px;
+        }
+
+        .message-input {
+            display: flex;
+            padding: 15px;
+            background: rgba(255, 246, 252, 0.9);
+            gap: 10px;
+            align-items: center;
+            border-top: 2px dashed var(--pink);
+        }
+
+        #message {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid var(--pink);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #3a1a4a;
+            outline: none;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        #message:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 10px rgba(193, 123, 255, 0.5);
+        }
+
+        #send {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, var(--pink), var(--purple));
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            white-space: nowrap;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        #send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(193, 123, 255, 0.6);
+        }
+
+        #send:active {
+            transform: translateY(0);
+        }
+
+        #send:disabled {
+            opacity: 0.5;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+            background: linear-gradient(45deg, #ccc, #999);
+        }
+
+        /* Magic wand cursor */
+        body {
+            cursor: url('https://i.imgur.com/5QVYV0p.png'), auto;
+        }
+
+        button, input, textarea {
+            cursor: url('https://i.imgur.com/6QVYV0p.png'), auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Profile Form -->
+    <div class="profile-form" id="profile-form">
+        <h2>Your Profile</h2>
+        <input type="text" id="username" placeholder="Name" required>
+        <textarea id="bio" placeholder="Describe yourself, tell about your kins... ✧⋄⋆" required></textarea>
+        <button id="start-chat">Begin the Chat!</button>
+    </div>
+    
+    <!-- Chat Container -->
+    <div class="chat-container" id="chat-container">
+        <div class="chat-header">
+            ✧ Fictionkin Chat ✧
+        </div>
+        <div class="partner-info">
+            <div id="partner-name">Finding a kin friend...</div>
+            <div id="partner-bio" class="partner-bio"></div>
+        </div>
+        <div class="chat-messages" id="messages">
+            <div class="system-message">This life story begins here...</div>
+        </div>
+        <div class="message-input">
+            <input type="text" id="message" placeholder="Share a part of yourself..." disabled>
+            <button id="send" disabled>Send</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let partnerId = null;
+        
+        // Add sakura petal elements dynamically
+        function createSakuraPetals() {
+            const petalCount = 15;
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.style.position = 'fixed';
+                petal.style.width = '20px';
+                petal.style.height = '20px';
+                petal.style.backgroundImage = 'url(https://i.imgur.com/ZuQxW0B.png)';
+                petal.style.backgroundSize = 'contain';
+                petal.style.backgroundRepeat = 'no-repeat';
+                petal.style.zIndex = '-1';
+                petal.style.opacity = Math.random() * 0.5 + 0.3;
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.top = '-30px';
+                petal.style.animation = `fall ${Math.random() * 10 + 10}s linear ${Math.random() * 5}s infinite`;
+                
+                const keyframes = `
+                    @keyframes fall {
+                        to {
+                            transform: translateY(100vh) rotate(${Math.random() * 360}deg);
+                        }
+                    }
+                `;
+                
+                const style = document.createElement('style');
+                style.innerHTML = keyframes;
+                document.head.appendChild(style);
+                
+                document.body.appendChild(petal);
+            }
+        }
+        
+        // Initialize sakura petals
+        createSakuraPetals();
+        
+        // Profile form submission
+        document.getElementById('start-chat').addEventListener('click', () => {
+            const username = document.getElementById('username').value.trim() || "Magical Stranger";
+            const bio = document.getElementById('bio').value.trim() || "Full of magic and wonder!";
+            
+            if (username) {
+                // Add magical transition effect
+                document.getElementById('profile-form').style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => {
+                    document.getElementById('profile-form').style.display = 'none';
+                    document.getElementById('chat-container').style.display = 'block';
+                    document.getElementById('chat-container').style.animation = 'fadeIn 0.5s forwards';
+                }, 500);
+                
+                // Connect to chat
+                socket.emit('join_queue', { 
+                    username: username, 
+                    bio: bio 
+                });
+            }
+        });
+        
+        // Chat events
+        socket.on('chat_start', (data) => {
+            document.getElementById('partner-name').textContent = data.partner_username;
+            document.getElementById('partner-bio').textContent = data.partner_bio;
+            document.getElementById('message').disabled = false;
+            document.getElementById('send').disabled = false;
+            document.getElementById('message').focus();
+            partnerId = data.partner_id;
+            
+            // Add magical welcome message
+            addSystemMessage(`You've connected with ${data.partner_username}!`);
+        });
+        
+        // Message sending
+        document.getElementById('send').addEventListener('click', sendMessage);
+        document.getElementById('message').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        function sendMessage() {
+            const input = document.getElementById('message');
+            const text = input.value.trim();
+            if (text) {
+                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                socket.emit('send_message', { text, time });
+                addMessage(text, time, 'sent');
+                input.value = '';
+                
+                // Add magical send effect
+                const sendBtn = document.getElementById('send');
+                sendBtn.innerHTML = 'Sent!';
+                setTimeout(() => {
+                    sendBtn.innerHTML = 'Send ';
+                }, 1000);
+            }
+        }
+        
+        // Receiving messages
+        socket.on('new_message', (data) => {
+            addMessage(data.text, data.time, 'received');
+            
+            // Add magical notification effect
+            const chatHeader = document.querySelector('.chat-header');
+            chatHeader.style.animation = 'pulse 0.5s';
+            setTimeout(() => {
+                chatHeader.style.animation = '';
+            }, 500);
+        });
+        
+        // Partner disconnected
+        socket.on('partner_disconnected', () => {
+            addSystemMessage('Your friend has vanished... Seeking new connection');
+            document.getElementById('partner-name').textContent = 'Searching for someone...';
+            document.getElementById('partner-bio').textContent = '';
+            document.getElementById('message').disabled = true;
+            document.getElementById('send').disabled = true;
+            
+            // Reconnect with same profile
+            const username = document.getElementById('username').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            socket.emit('join_queue', { username, bio });
+        });
+        
+        // Helper functions
+        function addMessage(text, time, type) {
+            const messages = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <div>${text}</div>
+                <small>${time}</small>
+            `;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+            
+            // Add magical effect to new messages
+            if (type === 'received') {
+                messageDiv.style.animation = 'magicGlow 1s';
+            }
+        }
+        
+        function addSystemMessage(text) {
+            const messages = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'system-message';
+            messageDiv.innerHTML = text;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        // Add additional animations
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.9); }
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            
+            @keyframes magicGlow {
+                0% { box-shadow: 0 0 5px rgba(123, 200, 255, 0); }
+                50% { box-shadow: 0 0 20px rgba(123, 200, 255, 0.7); }
+                100% { box-shadow: 0 0 5px rgba(123, 200, 255, 0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <audio id="sendSound" src="softclick.mp3" preload="auto"></audio>
+    <script>
+        // Функция воспроизведения звука отправки
+        function playSendSound() {
+            const sound = document.getElementById('sendSound');
+            sound.volume = 0.3; // Устанавливаем комфортную громкость
+            sound.currentTime = 0; // Перематываем на начало
+            sound.play().catch(e => console.log("Автовоспроизведение заблокировано"));
+        }
+    
+        // Модифицированная функция отправки сообщения
+        function sendMessage() {
+            const input = document.getElementById('message');
+            const text = input.value.trim();
+            if (text) {
+                // Воспроизводим звук
+                playSendSound();
+                
+                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                socket.emit('send_message', { text, time });
+                addMessage(text, time, 'sent');
+                input.value = '';
+                
+                // Анимация кнопки
+                const sendBtn = document.getElementById('send');
+                sendBtn.innerHTML = 'Sent!';
+                setTimeout(() => {
+                    sendBtn.innerHTML = 'Send';
+                }, 1000);
+            }
+        }
+    </script>
+    <!-- Аудио для уведомлений (скрыто) -->
+<audio id="message-sound" src="{{ url_for('static', filename='softclick.mp3') }}"></audio>
+
+<script>
+    // Проигрываем звук при новом сообщении
+    socket.on('new_message', function() {
+        document.getElementById('message-sound').play();
+    });
+</script>
+</body>
+</html>
